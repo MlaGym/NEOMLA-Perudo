@@ -1,0 +1,41 @@
+/* Resetta lo stile predefinito */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Imposta il corpo della pagina */
+body {
+  font-family: 'Arial', sans-serif;
+  background-image:url("output.gif");
+  background-size:cover;
+
+  height: 100vh; /* occupa tutta la finestra */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Contenitore centrato */
+.container {
+  background-color: rgba(255, 255, 255, 0); /* trasparente */
+  padding: 40px 60px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+h1,.subtitle {color:#fff;
+  text-shadow: 2px 2px 4px #000000;}
+/* Stile per il titolo */
+h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Stile per il sottotitolo */
+.subtitle {
+  font-size: 1.5rem;
+  font-style: italic;
+}

@@ -1,0 +1,6 @@
+node_modules/
+out/
+*.exe
+*.zip
+*.nupkg
+npm-debug.log
