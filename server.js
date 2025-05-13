@@ -1,53 +1,69 @@
+// Importazione delle dipendenze
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+
 const cors = require('cors');
-require('dotenv').config();//gor mongodb
-
+// Inizializzazione di Express
 const app = express();
-const server = http.createServer(app);
 
-// Abilita CORS per localhost e Render
+// Configurazione per il parsing del corpo delle richieste
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
+// Configurazione CORS (per consentire le richieste cross-origin)
 app.use(cors());
-const path = require('path');
-const porturi = process.env.PORT;
-const urirender = process.env.RENDER_URI;
 
-// Serve file statici dalla cartella 'public'
-app.use(express.static(path.join(__dirname,'public')));
-const io = new Server(server, {
-  cors: {
-    origin: [
-      'http://localhost:'+porturi,                // per sviluppo locale
-      urirender    // per produzione su Render
-    ],
-    methods: ['GET', 'POST']
+
+
+// Proteggi le rotte che richiedono l'autenticazione
+app.use('/game', (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/login'); // Se non autenticato, redirige al login
   }
+  next(); // Se autenticato, continua
 });
 
-// Rotta test per controllo HTTP
+app.use('/lobby', (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/login'); // Se non autenticato, redirige al login
+  }
+  next(); // Se autenticato, continua
+});
+
+// Rotte di base
 app.get('/', (req, res) => {
-  //correttamente è aggiungere la cartella 'public'
-  res.sendFile(path.join(__dirname, 'public','index.html'));
+  if (req.isAuthenticated()) {
+    return res.redirect('/main'); // Se autenticato, manda alla pagina principale
+  }
+  res.redirect('/login'); // Se non autenticato, manda al login
 });
 
-// Socket.io
-//versione testing
-io.on('connection', (socket) => {
-  console.log('🟢 Utente connesso');
-
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg); // invia a tutti i client
-  });
-
-  socket.on('disconnect', () => {
-    console.log('🔴 Utente disconnesso');
-  });
+// Pagina principale (Home)
+app.get('/main', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.sendFile(path.join(__dirname, 'public', 'main.html'));
+  }
+  res.redirect('/login');
 });
 
-// Porta dinamica per Render o 3000 in locale
-const PORT = process.env.PORT || 10000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server in ascolto su porta ${PORT}`);
+// Pagina di login
+app.get('/login', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/main');
+  }
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+// Pagina di registrazione
+app.get('/register', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/main');
+  }
+  res.sendFile(path.join(__dirname, 'public', 'register.html'));
+});
+
+// Avvio del server sulla porta specificata
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server in ascolto sulla porta ${PORT}`);
+});
