@@ -61,7 +61,15 @@ app.get('/register', (req, res) => {
   }
   res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
+app.post('/chat', (req, res) => {
+  const { message } = req.body;
 
+  console.log('Messaggio ricevuto:', message);
+
+  // Qui potresti salvare il messaggio in DB, inviarlo ad altri utenti, ecc.
+
+  res.json({ reply: `Hai scritto: "${message}"` });
+});
 // Avvio del server sulla porta specificata
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
